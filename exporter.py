@@ -119,8 +119,6 @@ if __name__ == '__main__':
             #print("get long metrics")
             get_metrics_imagestats()
             time_left = FREQUENCY
-
-        get_metrics_rms()
         
         if time_left<FREQGUIDER:
             #print("sleep itchy")
