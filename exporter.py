@@ -28,15 +28,20 @@ nina_up =0
 def getJSON(property, myobj):
     global nina_up
     url = "http://" + NINASERVER + ":1888/api/" + property
-    nina_up=1
+
     try:
-        x = requests.get(url, myobj)
+        x = requests.get(url, myobj, timeout=10)
         if x.status_code!=200:
+            nina_up =0
+            if DEBUG: print("setting offline")
             return None
+        if nina_up==0:
+            nina_up = 1
+            if DEBUG: print("setting online")
         return json.loads(x.content.decode())
     except:
-        #print("setting offline")
         nina_up=0
+        if DEBUG: print("setting offline")
         return None
 
 def get_metrics_rms():
@@ -47,7 +52,9 @@ def get_metrics_rms():
     ra = 0.0
     if DEBUG:
         arc = random.random()*1.8
-        nina_up = 1
+        dec = random.random()*1.8
+        ra = random.random()*1.8
+        data = getJSON("equipment", {'property': 'guider'})
     else:
         data = getJSON("equipment", {'property': 'guider'})
         if data==None:
@@ -77,24 +84,31 @@ def get_metrics_imagestats():
     stars = 0
     hfr = 0.0
     mean = 0
-    data = getJSON("history", {'property': 'count'})
-    global nina_up
     target = ''
-    if data==None:
-        return
-    #print( data )
-    idx = data['Response']['Count'] - 1
-    if idx<0 or idx==last_index:
-        return
-   
-    last_index = idx
-    data = getJSON("history", {'property': 'list', 'parameter': idx})['Response'][0]
-    if data==None:
-        return
-    target = data['TargetName']
-    stars = int(data['Stars'])
-    hfr= float(data['HFR'])
-    mean = int(data['Mean'])
+    global nina_up
+    if DEBUG:
+        stars = random.randint(80,200)
+        hfr = random.random()* 1.5+2.0
+        mean = random.randint( 600, 700 )
+        target='M99'
+    else:
+        data = getJSON("history", {'property': 'count'})
+
+        if data==None:
+            return
+        #print( data )
+        idx = data['Response']['Count'] - 1
+        if idx<0 or idx==last_index:
+            return
+    
+        last_index = idx
+        data = getJSON("history", {'property': 'list', 'parameter': idx})['Response'][0]
+        if data==None:
+            return
+        target = data['TargetName']
+        stars = int(data['Stars'])
+        hfr= float(data['HFR'])
+        mean = int(data['Mean'])
     image_stars.labels(target_name=target,ninaup=nina_up).set( stars )
     image_hfr.labels(target_name=target,ninaup=nina_up).set( hfr )
     image_mean.labels(target_name=target,ninaup=nina_up).set( mean )
@@ -108,15 +122,17 @@ if __name__ == '__main__':
         FREQUENCY = config['frequency']
         FREQGUIDER = config['frequency_guider']
         FREQIDLE = config['frequency_idle']
+        DEBUG = config['debug']
 
     print( "exporting at port {0}".format(EXPORTPORT) )
+    if DEBUG: print("debug mode ON")
     start_http_server(EXPORTPORT)
     time_left = FREQUENCY
     while True:
         get_metrics_rms()
     
         if time_left<=0 and nina_up:
-            #print("get long metrics")
+            if DEBUG: print("get long metrics")
             get_metrics_imagestats()
             time_left = FREQUENCY
         
@@ -126,11 +142,11 @@ if __name__ == '__main__':
             time_left = 0
         else:
             if nina_up:
-                #print(" sleep short")
+                if DEBUG: print(" sleep short")
                 time.sleep(FREQGUIDER)
                 time_left -= FREQGUIDER
             else:
-                #print( "sleep long")
+                if DEBUG: print( "sleep long")
                 time.sleep(FREQIDLE)
     
 	
