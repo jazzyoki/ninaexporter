@@ -10,8 +10,8 @@ Make sure you have the AdvancedAPI plugin from Christan Palm installed and Enabl
 Configure exporter in config.yaml
 
 ```yaml
-ninaserver: url to ninas without port, e.g. 127.0.0.1
-exportport: port to expose for prometheus e.g. 9091
+nina_server: url to ninas without port, e.g. 127.0.0.1
+export_port: port to expose for prometheus e.g. 9091
 frequency: frequency in sec to poll from Nina e.g 60
 frequency_guider: frequency in sec to poll Guider e.g. 10
 frequency_idle: frequency to poll if Nina is back up while Nina is offline, e.g. 120
