@@ -130,7 +130,7 @@ if __name__ == '__main__':
                 time.sleep(FREQGUIDER)
                 time_left -= FREQGUIDER
             else:
-                print( "sleep long")
+                #print( "sleep long")
                 time.sleep(FREQIDLE)
     
 	
