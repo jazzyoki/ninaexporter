@@ -29,27 +29,32 @@ weather_dewpoint = Gauge( 'nina_weather_dewpoint', "Dew Point")
 last_index = -1
 nina_up =0
 
-def getJSON(property, myobj):
-    global nina_up
-    url = "http://" + NINASERVER + ":1888/api/" + property
-
+def checkOnline():
+    url = "http://" + NINASERVER + ":1888/api/"
     try:
-        x = requests.get(url, myobj, timeout=10)
+        x = requests.get(url, timeout=(5,10))
         if x.status_code!=200:
-            nina_up =0
             if DEBUG: print("setting offline")
-            return None
+            return 0
         if nina_up==0:
-            nina_up = 1
             if DEBUG: print("setting online")
+        return 1
+    except:
+        if DEBUG: print("setting offline")
+        return 0
+    return 0
+
+def getJSON(property, myobj):
+    url = "http://" + NINASERVER + ":1888/api/" + property
+    try:
+        x = requests.get(url, myobj, timeout=(5,10))
+        if x.status_code!=200:
+            return None
         return json.loads(x.content.decode())
     except:
-        nina_up=0
-        if DEBUG: print("setting offline")
         return None
 
 def get_metrics_rms():
-    global nina_up
     pixel = 0.0
     arc = 0.0
     dec = 0.0
@@ -80,7 +85,6 @@ def get_metrics_rms():
     guider_rms_total_arc.set( arc )
     guider_rms_ra_arc.set(ra)
     guider_rms_dec_arc.set(dec)
-    nina_up_gauge.set( int(nina_up) )
 
 def get_metrics_weather():
     data = getJSON("equipment", {'property': 'weather'})
@@ -144,16 +148,25 @@ if __name__ == '__main__':
     print( "exporting at port {0}".format(EXPORTPORT) )
     if DEBUG: print("debug mode ON")
     start_http_server(EXPORTPORT)
-    time_left = FREQUENCY
+    time_left = 0
     while True:
-        get_metrics_rms()
-    
-        if time_left<=0 and nina_up:
-            if DEBUG: print("get long metrics")
-            get_metrics_imagestats()
-            get_metrics_weather()
-            time_left = FREQUENCY
-        
+        try:
+            nina_up = checkOnline()
+            nina_up_gauge.set( int(nina_up) )
+            long_metrics = False
+            if time_left<=0:
+                if DEBUG: print("get long metrics")
+                time_left = FREQUENCY
+                long_metrics = True
+            if nina_up:
+                get_metrics_rms()
+                if long_metrics: 
+                    get_metrics_imagestats()
+                    get_metrics_weather()
+                    
+        except:
+            if DEBUG: print('error getting metrics')
+            
         if time_left<FREQGUIDER:
             #print("sleep itchy")
             time.sleep(time_left)
