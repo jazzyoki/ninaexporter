@@ -3,7 +3,7 @@
 This is an exporter for NINA Astroimaging Software to Prometheus.
 It can be used if you want to build your observatory dashboard i.e using Grafana.
 
-Make sure you have the AdvancedAPI plugin from Christan Palm installed and Enabled in NINA.
+Make sure you have the AdvancedAPI 1.0.1.1 plugin from Christan Palm installed and Enabled in NINA.
 
 ## Configuration
 

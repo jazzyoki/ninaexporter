@@ -21,6 +21,10 @@ image_hfr = Gauge( 'nina_image_hfr', "Image HFR", ['target_name','ninaup'])
 image_stars = Gauge( 'nina_image_stars', "Number of stars detected in current image", ['target_name','ninaup'])
 image_mean = Gauge( 'nina_image_mean', "Mean value of the current image", ['target_name','ninaup'])
 nina_up_gauge = Gauge( 'nina_up', "Nina is online [0,1]")
+weather_skytemperature = Gauge( 'nina_weather_skytemperature', "Sky Temperature")
+weather_temperature = Gauge( 'nina_weather_temperature', "Sky Temperature")
+weather_humidity = Gauge( 'nina_weather_humidity', "Humidity")
+weather_dewpoint = Gauge( 'nina_weather_dewpoint', "Dew Point")
 
 last_index = -1
 nina_up =0
@@ -78,6 +82,19 @@ def get_metrics_rms():
     guider_rms_dec_arc.set(dec)
     nina_up_gauge.set( int(nina_up) )
 
+def get_metrics_weather():
+    data = getJSON("equipment", {'property': 'weather'})
+    if data==None:
+        return
+    try:
+        message = data['Response']
+        weather_skytemperature.set( float(message['SkyTemperature']))
+        weather_temperature.set( float(message['Temperature']))
+        weather_dewpoint.set( float(message['DewPoint'] ))
+        weather_humidity.set( float(message['Humidity']))
+    except:
+        print("error fetching weather")
+    
 
 def get_metrics_imagestats():
     global last_index
@@ -134,6 +151,7 @@ if __name__ == '__main__':
         if time_left<=0 and nina_up:
             if DEBUG: print("get long metrics")
             get_metrics_imagestats()
+            get_metrics_weather()
             time_left = FREQUENCY
         
         if time_left<FREQGUIDER:
