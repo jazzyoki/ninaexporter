@@ -30,6 +30,10 @@ debug: set to 0 for normal mode, set to 1 for generating random reports
 | nina_image_stars | bNumber of stars detected in current image |
 | nina_image_mean | Mean value of the current image |
 | nina_up | nina up and running [0,1] |
+| nina_weather_skytemperature | Sky Temperature |
+| nina_weather_temperature | Temperature |
+| nina_weather_humidity | Humidity |
+| nina_weather_dewpoint | Dew Point |
 
 ## Running the Code
 

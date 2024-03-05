@@ -22,7 +22,7 @@ image_stars = Gauge( 'nina_image_stars', "Number of stars detected in current im
 image_mean = Gauge( 'nina_image_mean', "Mean value of the current image", ['target_name','ninaup'])
 nina_up_gauge = Gauge( 'nina_up', "Nina is online [0,1]")
 weather_skytemperature = Gauge( 'nina_weather_skytemperature', "Sky Temperature")
-weather_temperature = Gauge( 'nina_weather_temperature', "Sky Temperature")
+weather_temperature = Gauge( 'nina_weather_temperature', "Temperature")
 weather_humidity = Gauge( 'nina_weather_humidity', "Humidity")
 weather_dewpoint = Gauge( 'nina_weather_dewpoint', "Dew Point")
 
