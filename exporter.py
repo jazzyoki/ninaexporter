@@ -93,6 +93,7 @@ def get_metrics_weather():
         return
     try:
         message = data['Response']
+        weather_skytemperature.set( float(message['SkyTemperature']))
         weather_temperature.set( float(message['Temperature']))
         weather_dewpoint.set( float(message['DewPoint'] ))
         weather_humidity.set( float(message['Humidity']))
