@@ -3,4 +3,4 @@ export_port: 9099
 frequency: 60
 frequency_guider: 10
 frequency_idle: 120
-debug: 1
+debug: 0

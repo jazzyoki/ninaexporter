@@ -25,6 +25,7 @@ weather_skytemperature = Gauge( 'nina_weather_skytemperature', "Sky Temperature"
 weather_temperature = Gauge( 'nina_weather_temperature', "Temperature")
 weather_humidity = Gauge( 'nina_weather_humidity', "Humidity")
 weather_dewpoint = Gauge( 'nina_weather_dewpoint', "Dew Point")
+safety_issafe = Gauge('nina_safety_issafe', "Safety Monitor Safe Reporting")
 
 last_index = -1
 nina_up =0
@@ -92,13 +93,24 @@ def get_metrics_weather():
         return
     try:
         message = data['Response']
-        weather_skytemperature.set( float(message['SkyTemperature']))
         weather_temperature.set( float(message['Temperature']))
         weather_dewpoint.set( float(message['DewPoint'] ))
         weather_humidity.set( float(message['Humidity']))
     except:
         print("error fetching weather")
     
+def get_metrics_safety():
+    try:
+        data = getJSON("equipment", {'property': 'safetymonitor'})
+        if data==None:
+            return
+        message = data['Response']
+        safety = message['IsSafe']
+        #print( safety )
+        safety_issafe.set( message['IsSafe'] )
+    except:
+        print("error fetching safety")
+
 
 def get_metrics_imagestats():
     global last_index
@@ -160,6 +172,7 @@ if __name__ == '__main__':
                 long_metrics = True
             if nina_up:
                 get_metrics_rms()
+                get_metrics_safety()
                 if long_metrics: 
                     get_metrics_imagestats()
                     get_metrics_weather()

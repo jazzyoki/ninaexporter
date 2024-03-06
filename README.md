@@ -34,6 +34,8 @@ debug: set to 0 for normal mode, set to 1 for generating random reports
 | nina_weather_temperature | Temperature |
 | nina_weather_humidity | Humidity |
 | nina_weather_dewpoint | Dew Point |
+| nina_safety_issafe | Safety Monitor Safe Reporting |
+
 
 ## Running the Code
 
