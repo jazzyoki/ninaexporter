@@ -57,7 +57,7 @@ def sendPushover(msg, image):
 #	os.remove(imagePath)
 if __name__ == '__main__':
 	print( "lets go" )
-	data = getJSON("equipment", {'property': 'safetymonitor'})['Response']
+	data = getJSON("equipment", {'property': 'dome'})['Response']
 	message = data
 	print(message)
 	#data = getJSON("history", {'property': 'count'})['Response']

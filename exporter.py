@@ -26,6 +26,7 @@ weather_temperature = Gauge( 'nina_weather_temperature', "Temperature")
 weather_humidity = Gauge( 'nina_weather_humidity', "Humidity")
 weather_dewpoint = Gauge( 'nina_weather_dewpoint', "Dew Point")
 safety_issafe = Gauge('nina_safety_issafe', "Safety Monitor Safe Reporting")
+nina_dome_shutter = Gauge('nina_dome_shutter', "Dome Shutter status")
 
 last_index = -1
 nina_up =0
@@ -55,11 +56,18 @@ def getJSON(property, myobj):
     except:
         return None
 
-def get_metrics_rms():
+def get_metrics_rms( nina ):
     pixel = 0.0
     arc = 0.0
     dec = 0.0
     ra = 0.0
+    if nina==0:
+        guider_rms_total_pixel.set(0 )
+        guider_rms_total_arc.set( 0 )
+        guider_rms_ra_arc.set(0)
+        guider_rms_dec_arc.set(0)
+        return
+    
     if DEBUG:
         arc = random.random()*1.8
         dec = random.random()*1.8
@@ -100,13 +108,30 @@ def get_metrics_weather():
     except:
         print("error fetching weather")
     
-def get_metrics_safety():
+def get_metrics_dome( nina ):
+    if nina==0:
+        nina_dome_shutter.set( -1 )
+        return
+    data = getJSON("equipment", {'property': 'dome'})
+    if data==None:
+        return
+    try:
+        message = data['Response']
+        nina_dome_shutter.set( float(message['ShutterStatus']))
+    except:
+        print("error fetching dome")
+    
+def get_metrics_safety (nina ):
+    if nina==0:
+        safety_issafe.set(-1)
     try:
         data = getJSON("equipment", {'property': 'safetymonitor'})
         if data==None:
             return
         message = data['Response']
-        safety = message['IsSafe']
+        safety = 0
+        if message['IsSafe']:
+            safety = 1
         #print( safety )
         safety_issafe.set( message['IsSafe'] )
     except:
@@ -171,12 +196,13 @@ if __name__ == '__main__':
                 if DEBUG: print("get long metrics")
                 time_left = FREQUENCY
                 long_metrics = True
-            if nina_up:
-                get_metrics_rms()
-                get_metrics_safety()
-                if long_metrics: 
-                    get_metrics_imagestats()
-                    get_metrics_weather()
+
+            get_metrics_rms( nina_up )
+            get_metrics_safety( nina_up )
+            get_metrics_dome( nina_up )
+            if long_metrics and nina_up: 
+                get_metrics_imagestats()
+                get_metrics_weather()
                     
         except:
             if DEBUG: print('error getting metrics')

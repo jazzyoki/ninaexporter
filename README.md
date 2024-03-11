@@ -34,8 +34,8 @@ debug: set to 0 for normal mode, set to 1 for generating random reports
 | nina_weather_temperature | Temperature |
 | nina_weather_humidity | Humidity |
 | nina_weather_dewpoint | Dew Point |
-| nina_safety_issafe | Safety Monitor Safe Reporting |
-
+| nina_safety_issafe | Safety Monitor Safe Reporting, -1 not connected, 0 unsafe, 1 safe |
+| nina_dome_shutter | Dome Shutter status, -1 not connected, 0 open, 1 closed, 2 opening, 3 closing |
 
 ## Running the Code
 
