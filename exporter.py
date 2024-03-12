@@ -188,7 +188,7 @@ def set_nina_offline():
     global targetdict
     global last_index
     for target in targetdict:
-        print( "setting {} to zero".format(target))
+        #print( "setting {} to zero".format(target))
         image_stars.labels(target_name=target).set( 0 )
         image_hfr.labels(target_name=target).set( 0 )
         image_mean.labels(target_name=target).set( 0 )
