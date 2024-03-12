@@ -17,9 +17,9 @@ guider_rms_total_pixel = Gauge('nina_guider_rms_total_pixel', "Total RMS error g
 guider_rms_total_arc = Gauge('nina_guider_rms_total_arc', "Total RMS error guiding in arcsec")
 guider_rms_dec_arc = Gauge('nina_guider_dec_arc', "Declination error in arcsec")
 guider_rms_ra_arc = Gauge('nina_guider_ra_arc', "Rectascension error in arcsec")
-image_hfr = Gauge( 'nina_image_hfr', "Image HFR", ['target_name','ninaup'])
-image_stars = Gauge( 'nina_image_stars', "Number of stars detected in current image", ['target_name','ninaup'])
-image_mean = Gauge( 'nina_image_mean', "Mean value of the current image", ['target_name','ninaup'])
+image_hfr = Gauge( 'nina_image_hfr', "Image HFR", ['target_name'])
+image_stars = Gauge( 'nina_image_stars', "Number of stars detected in current image", ['target_name'])
+image_mean = Gauge( 'nina_image_mean', "Mean value of the current image", ['target_name'])
 nina_up_gauge = Gauge( 'nina_up', "Nina is online [0,1]")
 weather_skytemperature = Gauge( 'nina_weather_skytemperature', "Sky Temperature")
 weather_temperature = Gauge( 'nina_weather_temperature', "Temperature")
@@ -30,6 +30,8 @@ nina_dome_shutter = Gauge('nina_dome_shutter', "Dome Shutter status")
 
 last_index = -1
 nina_up =0
+
+targetdict = {}
 
 def checkOnline():
     url = "http://" + NINASERVER + ":1888/api/"
@@ -95,7 +97,13 @@ def get_metrics_rms( nina ):
     guider_rms_ra_arc.set(ra)
     guider_rms_dec_arc.set(dec)
 
-def get_metrics_weather():
+def get_metrics_weather( nina ):
+    if nina==0:
+        weather_skytemperature.set( 0 )
+        weather_temperature.set( 0 )
+        weather_dewpoint.set( 0 )
+        weather_humidity.set( 0 )
+        return
     data = getJSON("equipment", {'property': 'weather'})
     if data==None:
         return
@@ -138,21 +146,24 @@ def get_metrics_safety (nina ):
         print("error fetching safety")
 
 
-def get_metrics_imagestats():
+def get_metrics_imagestats( nina ):
     global last_index
+    global targetdict
     stars = 0
     hfr = 0.0
     mean = 0
     target = ''
-    global nina_up
+    if nina==0:
+        return
+ 
     if DEBUG:
         stars = random.randint(80,200)
         hfr = random.random()* 1.5+2.0
         mean = random.randint( 600, 700 )
         target='M99'
+        targetdict['M99'] = 1
     else:
         data = getJSON("history", {'property': 'count'})
-
         if data==None:
             return
         #print( data )
@@ -165,12 +176,24 @@ def get_metrics_imagestats():
         if data==None:
             return
         target = data['TargetName']
+        targetdict[ target ] = 1
         stars = int(data['Stars'])
         hfr= float(data['HFR'])
         mean = int(data['Mean'])
-    image_stars.labels(target_name=target,ninaup=nina_up).set( stars )
-    image_hfr.labels(target_name=target,ninaup=nina_up).set( hfr )
-    image_mean.labels(target_name=target,ninaup=nina_up).set( mean )
+    image_stars.labels(target_name=target).set( stars )
+    image_hfr.labels(target_name=target).set( hfr )
+    image_mean.labels(target_name=target).set( mean )
+ 
+def set_nina_offline():
+    global targetdict
+    global last_index
+    for target in targetdict:
+        print( "setting {} to zero".format(target))
+        image_stars.labels(target_name=target).set( 0 )
+        image_hfr.labels(target_name=target).set( 0 )
+        image_mean.labels(target_name=target).set( 0 )
+    targetdict.clear()
+    last_index = -2
 
 if __name__ == '__main__':
     with open("config.yaml", "r" ) as f:
@@ -189,8 +212,13 @@ if __name__ == '__main__':
     time_left = 0
     while True:
         try:
+            switchstate = nina_up
             nina_up = checkOnline()
             nina_up_gauge.set( int(nina_up) )
+            #check if we are set to offline
+            if switchstate!=nina_up and nina_up==0:
+                set_nina_offline()
+
             long_metrics = False
             if time_left<=0:
                 if DEBUG: print("get long metrics")
@@ -200,9 +228,9 @@ if __name__ == '__main__':
             get_metrics_rms( nina_up )
             get_metrics_safety( nina_up )
             get_metrics_dome( nina_up )
-            if long_metrics and nina_up: 
-                get_metrics_imagestats()
-                get_metrics_weather()
+            if long_metrics: 
+                get_metrics_imagestats( nina_up )
+                get_metrics_weather( nina_up )
                     
         except:
             if DEBUG: print('error getting metrics')
