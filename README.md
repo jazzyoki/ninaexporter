@@ -79,6 +79,8 @@ python exporter.py
 
 # Sample Grafana
 This is a sample how a dahsboard could look like.
-It's a screenshot of a live session from our JST Observatory.
 
+Here are some screenshots of a live session from our JST Observatory.
+
+![jst_dash_preview](https://github.com/jazzyoki/ninaexporter/assets/70711565/d23c5669-5cce-49e3-8955-d45c412be7b8)
 ![jst_dash2](https://github.com/jazzyoki/ninaexporter/assets/70711565/92d68369-9066-4f7e-aece-2fe143628554)
