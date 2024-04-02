@@ -45,6 +45,10 @@ The symbols ```nina_image_hfr```, ```nina_image_stars``` and ```nina_image_mean`
 | target_name | the designated target name |
 | filter_name | the filter name |
 
+### Image Path
+The image path is useful, if you want to expose the image via an web server that can be then linked into a dashboard container e.g. grafana.
+In that case let the imagepath point to the webservers content folder.
+
 ## Running the Code
 
 I always prefer to run my python script in virtual environments, but thats up to you
@@ -53,13 +57,13 @@ if you like to do the same, set it up first
 ### create and activate virtual env
 
 Windows:
-```
+```shell
 cd \path\to\files
 python -m venv ninaexporter
 .\Scripts\activate
 ```
 Linux:
-```
+```sh
 cd /path/to/files
 python -m venv ninaexporter
 source ./bin/activate
@@ -67,15 +71,28 @@ source ./bin/activate
 
 ### running
 first make sure you have all the required modules installed
-```console
+```sh
 pip install -r requirements.txt
 ```
 
 then configure the configure.yaml to your liking or leave it default
 and start
-```
+```sh
 python exporter.py
 ```
+
+## Configure Prometheus
+
+Edit the '''config/prometheus.yaml''' file and append the following lines
+```yaml
+  - job_name: 'nina-export'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['url_to_python_host:9099']
+```
+
+Note: a sample docker compose for prometheus and grafana is in this repository
+```docker-compose.yml```
 
 # Sample Grafana
 This is a sample how a dahsboard could look like.
