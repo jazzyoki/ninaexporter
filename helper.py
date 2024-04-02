@@ -10,7 +10,7 @@ USERKEY  = "xxxxx"
 NINAHOST = "127.0.0.1"
 PREVIEW  = 'preview.jpg'
 mytmpdir = os.environ['TEMP']
-imagePath = mytmpdir + '\\' + PREVIEW
+imagePath = '.\preview.jpg'
 
 def getJSON(property, myobj):
 	url = "http://" + NINAHOST + ":1888/api/" + property
@@ -57,9 +57,19 @@ def sendPushover(msg, image):
 #	os.remove(imagePath)
 if __name__ == '__main__':
 	print( "lets go" )
-	data = getJSON("equipment", {'property': 'dome'})['Response']
-	message = data
-	print(message)
+	#data = getJSON("equipment", {'property': 'image'})['Response']
+	data = getJSON("equipment", {'property': 'image', 'parameter': '70', 'index': '0'})
+	if len(data['Error'])>0:
+		print( data['Error'])
+	else:
+		message = data['Response']
+		if len(data['Response']) <100:
+			print(message+"!@!!")
+		else:
+			imageb64 = data['Response']
+			writePreview(imageb64, imagePath)
+
+
 	#data = getJSON("history", {'property': 'count'})['Response']
 	#print ( data)
 	#data = getJSON("history", {'property': 'list', 'parameter': 12})['Response']

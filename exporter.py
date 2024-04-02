@@ -12,6 +12,7 @@ FREQUENCY = 60
 FREQGUIDER = 10
 FREQIDLE = 120
 DEBUG = 0
+IMAGEPATH = ''
 
 guider_rms_total_pixel = Gauge('nina_guider_rms_total_pixel', "Total RMS error guiding in pixel")
 guider_rms_total_arc = Gauge('nina_guider_rms_total_arc', "Total RMS error guiding in arcsec")
@@ -27,7 +28,7 @@ weather_humidity = Gauge( 'nina_weather_humidity', "Humidity")
 weather_dewpoint = Gauge( 'nina_weather_dewpoint', "Dew Point")
 safety_issafe = Gauge('nina_safety_issafe', "Safety Monitor Safe Reporting")
 nina_dome_shutter = Gauge('nina_dome_shutter', "Dome Shutter status")
-
+filter_name = Gauge('nina_filter_name', "Current Filtername")
 last_index = -1
 nina_up =0
 
@@ -184,6 +185,27 @@ def get_metrics_imagestats( nina ):
     image_hfr.labels(target_name=target).set( hfr )
     image_mean.labels(target_name=target).set( mean )
  
+
+def get_imagetrain(nina ):
+    if nina==0:
+        return
+    
+
+def get_image(nina):
+    if nina==0:
+        return
+    data = getJSON("equipment", {'property': 'image', 'parameter': '70', 'index': '0'})
+    if data==None:
+        return
+    if len(data['Response'])<100:
+        return
+    imageb64 = data['Response']
+    bytes = b64decode(imageb64)
+    f = open(IMAGEPATH, 'wb')
+    f.write(bytes)
+    f.close()
+    return
+
 def set_nina_offline():
     global targetdict
     global last_index
@@ -205,6 +227,7 @@ if __name__ == '__main__':
         FREQGUIDER = config['frequency_guider']
         FREQIDLE = config['frequency_idle']
         DEBUG = config['debug']
+        IMAGEPATH = config['imagepath']
 
     print( "exporting at port {0}".format(EXPORTPORT) )
     if DEBUG: print("debug mode ON")
@@ -230,6 +253,7 @@ if __name__ == '__main__':
             get_metrics_dome( nina_up )
             if long_metrics: 
                 get_metrics_imagestats( nina_up )
+                get_image( nina_up )
                 get_metrics_weather( nina_up )
                     
         except:
