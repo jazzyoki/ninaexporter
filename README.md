@@ -22,7 +22,7 @@ Configure exporter in config.yaml
 
 ```yaml
 nina_server: url to ninas without port, e.g. 127.0.0.1
-export_port: port to expose for prometheus e.g. 9091
+export_port: port to expose for prometheus e.g. 9099
 frequency: frequency in sec to poll from Nina e.g 60
 frequency_guider: frequency in sec to poll Guider e.g. 10
 frequency_idle: frequency to poll if Nina is back up while Nina is offline, e.g. 120
@@ -187,7 +187,6 @@ services:
  
  ```
 
-#### Sample Grafana Dashboard
 
  #### next steps
  - login into grafana. default user ```admin``` default password ```admin```
@@ -195,3 +194,9 @@ services:
  - ![add_datasource](https://github.com/jazzyoki/ninaexporter/assets/70711565/63936f7d-e887-434d-9abd-79805aa42a82)
  
  - [start exporter](#the-exporter)
+
+## Sample Grafana Dashboard
+An example dashboard can be found in the repository ```Nina Dashboard.json```
+
+
+
