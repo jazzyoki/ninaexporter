@@ -92,6 +92,11 @@ and start
 python exporter.py
 ```
 
+### test
+you can test, if that worked by going to a browser and navigate to the exporter metrics page
+```http://localhost:9099/metrics```
+Replace localhost with the IP address where the exporter is running
+
 ## Configure Prometheus
 
 Edit the '''config/prometheus.yaml''' file and append the following lines
@@ -108,7 +113,7 @@ Note: a sample docker compose for prometheus and grafana is in this repository
 ## Sample Architecture
 ![jst_architecture](https://github.com/jazzyoki/ninaexporter/assets/70711565/ea1f877b-ad29-494c-8e8a-eb250aa23f4e)
 
-## Sample Grafana
+## Grafana Example
 This is a sample how a dahsboard could look like.
 
 Here are some screenshots of a live session from our JST Observatory.
@@ -147,8 +152,6 @@ Go to Portainer (http://[raspbi]:9443) and create a new stack.
 Paste this Docker Compose yaml into it and deploy
 
 ```yaml
-hier das docker compose (musst die volumes anpassen. bei mir sind alle docker daten in /dockerdata)
-```yaml
 ---
 volumes:
   prometheus-data:
@@ -184,7 +187,11 @@ services:
  
  ```
 
+#### Sample Grafana Dashboard
+
  #### next steps
+ - login into grafana. default user ```admin``` default password ```admin```
  - in grafana connect data sources to prometheus
- - configure prometheus
- - 
+ - ![add_datasource](https://github.com/jazzyoki/ninaexporter/assets/70711565/63936f7d-e887-434d-9abd-79805aa42a82)
+ 
+ - [start exporter](#the-exporter)
