@@ -141,6 +141,8 @@ Create a folder for prometheus configuration:
 sudo mkdir /etc/prometheus
 ```
 
+copy the prometheus.yaml provided in this repository into /etc/prometheus
+
 Go to Portainer (http://[raspbi]:9443) and create a new stack.
 Paste this Docker Compose yaml into it and deploy
 
@@ -181,3 +183,8 @@ services:
       GF_PANELS_DISABLE_SANITIZE_HTML: TRUE
  
  ```
+
+ #### next steps
+ - in grafana connect data sources to prometheus
+ - configure prometheus
+ - 
