@@ -1,11 +1,22 @@
 # Nina Prometheus Exporter
 
+## Prerequisites
+
+The following components should be installed prior to the exporters use
+
+- Python & Python PIP
+- Prometheus
+- optional: Grafana
+
+Also see [Raspberry Pi Installation](#raspberry-pi)
+
+## The Exporter
 This is an exporter for NINA Astroimaging Software to Prometheus.
 It can be used if you want to build your observatory dashboard i.e using Grafana.
 
 Make sure you have the AdvancedAPI 1.0.1.1 plugin from Christan Palm installed and Enabled in NINA.
 
-## Configuration
+### Configuration
 
 Configure exporter in config.yaml
 
@@ -19,7 +30,11 @@ debug: set to 0 for normal mode, set to 1 for generating random reports
 imagepath: path for the image preview to write out (jpg) 
 ```
 
-## Exported Symbols
+#### Image Path
+The image path is useful, if you want to expose the image via an web server that can be then linked into a dashboard container e.g. grafana.
+In that case let the imagepath point to the webservers content folder.
+
+### Exported Symbols
 
 |name|description|
 |----|-----------|
@@ -45,11 +60,8 @@ The symbols ```nina_image_hfr```, ```nina_image_stars``` and ```nina_image_mean`
 | target_name | the designated target name |
 | filter_name | the filter name |
 
-### Image Path
-The image path is useful, if you want to expose the image via an web server that can be then linked into a dashboard container e.g. grafana.
-In that case let the imagepath point to the webservers content folder.
 
-## Running the Code
+### Running the Code
 
 I always prefer to run my python script in virtual environments, but thats up to you
 if you like to do the same, set it up first
@@ -69,7 +81,6 @@ python -m venv ninaexporter
 source ./bin/activate
 ```
 
-### running
 first make sure you have all the required modules installed
 ```sh
 pip install -r requirements.txt
@@ -94,13 +105,79 @@ Edit the '''config/prometheus.yaml''' file and append the following lines
 Note: a sample docker compose for prometheus and grafana is in this repository
 ```docker-compose.yml```
 
-# Sample Architecture
+## Sample Architecture
 ![jst_architecture](https://github.com/jazzyoki/ninaexporter/assets/70711565/ea1f877b-ad29-494c-8e8a-eb250aa23f4e)
 
-# Sample Grafana
+## Sample Grafana
 This is a sample how a dahsboard could look like.
 
 Here are some screenshots of a live session from our JST Observatory.
 
 ![jst_dash_preview](https://github.com/jazzyoki/ninaexporter/assets/70711565/d23c5669-5cce-49e3-8955-d45c412be7b8)
 ![jst_dash2](https://github.com/jazzyoki/ninaexporter/assets/70711565/92d68369-9066-4f7e-aece-2fe143628554)
+
+## Raspberry Pi
+
+#### Install PIP
+```sh
+sudo apt-get install python3-pip
+```
+
+#### Install Docker & Portainer
+Docker: 
+```sh
+curl -sSL https://get.docker.com | sh
+```
+
+Portainer:
+```sh
+sudo docker run -d -p 8000:8000 -p 9000:9000 -p 9443:9443 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+```
+
+#### Install Prometheus & Grafana
+
+Create a folder for prometheus configuration:
+```sh
+sudo mkdir /etc/prometheus
+```
+
+Go to Portainer (http://[raspbi]:9443) and create a new stack.
+Paste this Docker Compose yaml into it and deploy
+
+```yaml
+hier das docker compose (musst die volumes anpassen. bei mir sind alle docker daten in /dockerdata)
+```yaml
+---
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+    
+services:
+  prometheus:
+    image: prom/prometheus:v2.37.9
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    command: "--config.file=/etc/prometheus/prometheus.yaml"
+    volumes:
+      - /etc/prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+    
+    
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+    restart: unless-stopped
+
+    environment:
+      GF_PANELS_DISABLE_SANITIZE_HTML: TRUE
+ 
+ ```
