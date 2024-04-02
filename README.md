@@ -6,9 +6,12 @@ The following components should be installed prior to the exporters use
 
 - Python & Python PIP
 - Prometheus
+- Nina installed with plugin Advanced API
 - optional: Grafana
 
-Also see [Raspberry Pi Installation](#raspberry-pi)
+Also see
+-  [Raspberry Pi Installation](#raspberry-pi).
+- Grafana Sample [Dashboard](#sample-grafana-dashboard)
 
 ## The Exporter
 This is an exporter for NINA Astroimaging Software to Prometheus.
