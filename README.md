@@ -147,6 +147,7 @@ sudo mkdir /etc/prometheus
 ```
 
 copy the prometheus.yaml provided in this repository into /etc/prometheus
+[prometheus config file](https://github.com/jazzyoki/ninaexporter/blob/main/prometheus.yaml)
 
 Go to Portainer (http://[raspbi]:9443) and create a new stack.
 Paste this Docker Compose yaml into it and deploy
@@ -197,6 +198,7 @@ services:
 
 ## Sample Grafana Dashboard
 An example dashboard can be found in the repository ```Nina Dashboard.json```
+[Grafana JSON file](https://github.com/jazzyoki/ninaexporter/blob/main/Nina%20Dashboard.json)
 
 
 
