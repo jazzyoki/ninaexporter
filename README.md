@@ -94,6 +94,9 @@ Edit the '''config/prometheus.yaml''' file and append the following lines
 Note: a sample docker compose for prometheus and grafana is in this repository
 ```docker-compose.yml```
 
+# Sample Architecture
+![jst_architecture](https://github.com/jazzyoki/ninaexporter/assets/70711565/ea1f877b-ad29-494c-8e8a-eb250aa23f4e)
+
 # Sample Grafana
 This is a sample how a dahsboard could look like.
 
