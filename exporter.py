@@ -18,9 +18,9 @@ guider_rms_total_pixel = Gauge('nina_guider_rms_total_pixel', "Total RMS error g
 guider_rms_total_arc = Gauge('nina_guider_rms_total_arc', "Total RMS error guiding in arcsec")
 guider_rms_dec_arc = Gauge('nina_guider_dec_arc', "Declination error in arcsec")
 guider_rms_ra_arc = Gauge('nina_guider_ra_arc', "Rectascension error in arcsec")
-image_hfr = Gauge( 'nina_image_hfr', "Image HFR", ['target_name'])
-image_stars = Gauge( 'nina_image_stars', "Number of stars detected in current image", ['target_name'])
-image_mean = Gauge( 'nina_image_mean', "Mean value of the current image", ['target_name'])
+image_hfr = Gauge( 'nina_image_hfr', "Image HFR", ['target_name','filter_name'])
+image_stars = Gauge( 'nina_image_stars', "Number of stars detected in current image", ['target_name','filter_name'])
+image_mean = Gauge( 'nina_image_mean', "Mean value of the current image", ['target_name','filter_name'])
 nina_up_gauge = Gauge( 'nina_up', "Nina is online [0,1]")
 weather_skytemperature = Gauge( 'nina_weather_skytemperature', "Sky Temperature")
 weather_temperature = Gauge( 'nina_weather_temperature', "Temperature")
@@ -28,7 +28,6 @@ weather_humidity = Gauge( 'nina_weather_humidity', "Humidity")
 weather_dewpoint = Gauge( 'nina_weather_dewpoint', "Dew Point")
 safety_issafe = Gauge('nina_safety_issafe', "Safety Monitor Safe Reporting")
 nina_dome_shutter = Gauge('nina_dome_shutter', "Dome Shutter status")
-filter_name = Gauge('nina_filter_name', "Current Filtername")
 last_index = -1
 nina_up =0
 
@@ -154,6 +153,7 @@ def get_metrics_imagestats( nina ):
     hfr = 0.0
     mean = 0
     target = ''
+    fname = ''
     if nina==0:
         return
  
@@ -177,34 +177,32 @@ def get_metrics_imagestats( nina ):
         if data==None:
             return
         target = data['TargetName']
+        fname = data['Filter']
         targetdict[ target ] = 1
         stars = int(data['Stars'])
         hfr= float(data['HFR'])
         mean = int(data['Mean'])
-    image_stars.labels(target_name=target).set( stars )
-    image_hfr.labels(target_name=target).set( hfr )
-    image_mean.labels(target_name=target).set( mean )
+    image_stars.labels(target_name=target,filter_name=fname).set( stars )
+    image_hfr.labels(target_name=target,filter_name=fname).set( hfr )
+    image_mean.labels(target_name=target,filter_name=fname).set( mean )
  
-
-def get_imagetrain(nina ):
-    if nina==0:
-        return
-    
 
 def get_image(nina):
     if nina==0:
         return
-    data = getJSON("equipment", {'property': 'image', 'parameter': '70', 'index': '0'})
-    if data==None:
+    try:
+        data = getJSON("equipment", {'property': 'image', 'parameter': '70', 'index': '0'})
+        if data==None:
+            return
+        if len(data['Response'])<100:
+            return
+        imageb64 = data['Response']
+        bytes = b64decode(imageb64)
+        f = open(IMAGEPATH, 'wb')
+        f.write(bytes)
+        f.close()
+    except:
         return
-    if len(data['Response'])<100:
-        return
-    imageb64 = data['Response']
-    bytes = b64decode(imageb64)
-    f = open(IMAGEPATH, 'wb')
-    f.write(bytes)
-    f.close()
-    return
 
 def set_nina_offline():
     global targetdict

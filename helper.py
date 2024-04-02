@@ -35,6 +35,18 @@ def sendPushover(msg, image):
 	return r
 
 
+def get_image():
+	data = getJSON("equipment", {'property': 'image', 'parameter': '70', 'index': '0'})
+	if len(data['Error'])>0:
+		print( data['Error'])
+	else:
+		message = data['Response']
+		if len(data['Response']) <100:
+			print(message+"!@!!")
+		else:
+			imageb64 = data['Response']
+			writePreview(imageb64, imagePath)
+
 #currentFrameNr = data['Response']['Count'] - 2
 #data = getJSON("history", {'property': 'list', 'parameter': currentFrameNr})
 #message =  "Id: "     + str(data['Response'][0]["Id"]) + "\n"
@@ -58,18 +70,14 @@ def sendPushover(msg, image):
 if __name__ == '__main__':
 	print( "lets go" )
 	#data = getJSON("equipment", {'property': 'image'})['Response']
-	data = getJSON("equipment", {'property': 'image', 'parameter': '70', 'index': '0'})
+	#data = getJSON("equipment", {'property': 'filterwheel', 'parameter': '70', 'index': '0'})
+	data = getJSON("history", {'property': 'list', 'parameter': 0})
 	if len(data['Error'])>0:
 		print( data['Error'])
 	else:
 		message = data['Response']
-		if len(data['Response']) <100:
-			print(message+"!@!!")
-		else:
-			imageb64 = data['Response']
-			writePreview(imageb64, imagePath)
-
-
+		print(message)
+	
 	#data = getJSON("history", {'property': 'count'})['Response']
 	#print ( data)
 	#data = getJSON("history", {'property': 'list', 'parameter': 12})['Response']

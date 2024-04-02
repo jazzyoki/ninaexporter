@@ -16,6 +16,7 @@ frequency: frequency in sec to poll from Nina e.g 60
 frequency_guider: frequency in sec to poll Guider e.g. 10
 frequency_idle: frequency to poll if Nina is back up while Nina is offline, e.g. 120
 debug: set to 0 for normal mode, set to 1 for generating random reports 
+imagepath: path for the image preview to write out (jpg) 
 ```
 
 ## Exported Symbols
@@ -36,6 +37,13 @@ debug: set to 0 for normal mode, set to 1 for generating random reports
 | nina_weather_dewpoint | Dew Point |
 | nina_safety_issafe | Safety Monitor Safe Reporting, -1 not connected, 0 unsafe, 1 safe |
 | nina_dome_shutter | Dome Shutter status, -1 not connected, 0 open, 1 closed, 2 opening, 3 closing |
+
+### Labels 
+The symbols ```nina_image_hfr```, ```nina_image_stars``` and ```nina_image_mean``` have the following labels
+|label|description|
+|-----|-----------|
+| target_name | the designated target name |
+| filter_name | the filter name |
 
 ## Running the Code
 
