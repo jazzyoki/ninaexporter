@@ -19,12 +19,17 @@ It can be used if you want to build your observatory dashboard i.e using Grafana
 
 Make sure you have the AdvancedAPI 1.0.1.1 plugin from Christan Palm installed and Enabled in NINA.
 
+The exporter.py is importing the data from nina_server:1888 and exports it by default on port 9099, from where prometheus is picking it up for scraping.
+The dataflow is looking like this:
+Sensores -> Nina (Advanced API) -> Nina Exporter -> Prometheus -> Grafana -> Web Browser
+See also [Exmpale Architecture](#sample-architecture)
+
 ### Configuration
 
 Configure exporter in config.yaml
 
 ```yaml
-nina_server: url to ninas without port, e.g. 127.0.0.1
+nina_server: url to nina without port, e.g. 127.0.0.1
 export_port: port to expose for prometheus e.g. 9099
 frequency: frequency in sec to poll from Nina e.g 60
 frequency_guider: frequency in sec to poll Guider e.g. 10
@@ -84,6 +89,7 @@ python -m venv ninaexporter
 source ./bin/activate
 ```
 
+copy the script files (exporter.py, requirements.txt and config.yml) into the environment folder (ninaexporter)
 first make sure you have all the required modules installed
 ```sh
 pip install -r requirements.txt
