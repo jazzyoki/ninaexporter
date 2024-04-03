@@ -22,6 +22,7 @@ Make sure you have the AdvancedAPI 1.0.1.1 plugin from Christan Palm installed a
 The exporter.py is importing the data from nina_server:1888 and exports it by default on port 9099, from where prometheus is picking it up for scraping.
 The dataflow is looking like this:
 Sensores -> Nina (Advanced API) -> Nina Exporter -> Prometheus -> Grafana -> Web Browser
+
 See also [Exmpale Architecture](#sample-architecture)
 
 ### Configuration
@@ -89,8 +90,7 @@ python -m venv ninaexporter
 source ./bin/activate
 ```
 
-copy the script files (exporter.py, requirements.txt and config.yml) into the environment folder (ninaexporter)
-first make sure you have all the required modules installed
+copy the files (exporter.py, requirements.txt and config.yml) into the environment folder (ninaexporter) and make sure you have all the required modules installed
 ```sh
 pip install -r requirements.txt
 ```
@@ -106,7 +106,7 @@ you can test, if that worked by going to a browser and navigate to the exporter 
 ```http://localhost:9099/metrics```
 Replace localhost with the IP address where the exporter is running
 
-## Configure Prometheus
+### Configure Prometheus
 
 Edit the '''config/prometheus.yaml''' file and append the following lines
 ```yaml

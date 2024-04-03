@@ -342,10 +342,11 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "<img src=\"http://10.147.19.69/preview.jpg\" id=\"imageToUpdate\" />\r\n<script language=\"javascript\">\r\nfunction updateImage() {\r\n   image = document.getElementById(\"imageToUpdate\");\r\n   image.src = \"http://10.147.19.69/preview.jpg\" + \"?r=\" + Math.random();\r\n   setTimeout(updateImage, 15000);\r\n}\r\nupdateImage();\r\n</script>",
+        "content": "<img src=\"http://localhost/preview.jpg\" id=\"imageToUpdate\" />\r\n<script language=\"javascript\">\r\nfunction updateImage() {\r\n   image = document.getElementById(\"imageToUpdate\");\r\n   image.src = \"http://localhost/preview.jpg\" + \"?r=\" + Math.random();\r\n   setTimeout(updateImage, 15000);\r\n}\r\nupdateImage();\r\n</script>",
         "mode": "html"
       },
       "pluginVersion": "10.3.3",
+      "title": "last capture",
       "type": "text"
     },
     {
@@ -1428,8 +1429,8 @@
       {
         "current": {
           "selected": false,
-          "text": "nina-jst",
-          "value": "nina-jst"
+          "text": "nina-exporter",
+          "value": "nina-exporter"
         },
         "datasource": {
           "type": "prometheus",
@@ -1476,6 +1477,6 @@
   "timezone": "",
   "title": "Nina Dashboard",
   "uid": "aa19409a-0a65-4591-baf0-8362c032b3d6",
-  "version": 6,
+  "version": 7,
   "weekStart": "monday"
 }
