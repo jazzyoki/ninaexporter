@@ -28,12 +28,12 @@ weather_humidity = Gauge( 'nina_weather_humidity', "Humidity")
 weather_dewpoint = Gauge( 'nina_weather_dewpoint', "Dew Point")
 safety_issafe = Gauge('nina_safety_issafe', "Safety Monitor Safe Reporting")
 nina_dome_shutter = Gauge('nina_dome_shutter', "Dome Shutter status")
-last_index = -1
-nina_up =0
+last_index:int = -1
+nina_up:int =0
 
 targetdict = {}
 
-def checkOnline():
+def checkOnline() -> int:
     url = "http://" + NINASERVER + ":1888/api/"
     try:
         x = requests.get(url, timeout=(5,10))
@@ -48,7 +48,7 @@ def checkOnline():
         return 0
     return 0
 
-def getJSON(property, myobj):
+def getJSON( property:str , myobj:dict ):
     url = "http://" + NINASERVER + ":1888/api/" + property
     try:
         x = requests.get(url, myobj, timeout=(5,10))
@@ -58,12 +58,12 @@ def getJSON(property, myobj):
     except:
         return None
 
-def get_metrics_rms( nina ):
-    pixel = 0.0
-    arc = 0.0
-    dec = 0.0
-    ra = 0.0
-    if nina==0:
+def get_metrics_rms( nina:int ) -> None:
+    pixel:float = 0.0
+    arc:float = 0.0
+    dec:float = 0.0
+    ra:float = 0.0
+    if not nina:
         guider_rms_total_pixel.set(0 )
         guider_rms_total_arc.set( 0 )
         guider_rms_ra_arc.set(0)
@@ -97,7 +97,7 @@ def get_metrics_rms( nina ):
     guider_rms_ra_arc.set(ra)
     guider_rms_dec_arc.set(dec)
 
-def get_metrics_weather( nina ):
+def get_metrics_weather( nina:int ) -> None:
     if nina==0:
         weather_skytemperature.set( 0 )
         weather_temperature.set( 0 )
@@ -116,8 +116,8 @@ def get_metrics_weather( nina ):
     except:
         print("error fetching weather")
     
-def get_metrics_dome( nina ):
-    if nina==0:
+def get_metrics_dome( nina:int ) ->None:
+    if not nina:
         nina_dome_shutter.set( -1 )
         return
     data = getJSON("equipment", {'property': 'dome'})
@@ -129,8 +129,8 @@ def get_metrics_dome( nina ):
     except:
         print("error fetching dome")
     
-def get_metrics_safety (nina ):
-    if nina==0:
+def get_metrics_safety ( nina:int ) ->None:
+    if not nina:
         safety_issafe.set(-1)
     try:
         data = getJSON("equipment", {'property': 'safetymonitor'})
@@ -146,7 +146,7 @@ def get_metrics_safety (nina ):
         print("error fetching safety")
 
 
-def get_metrics_imagestats( nina ):
+def get_metrics_imagestats( nina:int )->None:
     global last_index
     global targetdict
     stars = 0
@@ -154,7 +154,7 @@ def get_metrics_imagestats( nina ):
     mean = 0
     target = ''
     fname = ''
-    if nina==0:
+    if not nina:
         return
  
     if DEBUG:
@@ -187,11 +187,12 @@ def get_metrics_imagestats( nina ):
     image_mean.labels(target_name=target,filter_name=fname).set( mean )
  
 
-def get_image(nina):
-    if nina==0:
+def get_image( nina:int ) -> None:
+    global last_index
+    if nina==0 or last_index<0:
         return
     try:
-        data = getJSON("equipment", {'property': 'image', 'parameter': '70', 'index': '0'})
+        data = getJSON("equipment", {'property': 'image', 'parameter': '70', 'index': last_index})
         if data==None:
             return
         if len(data['Response'])<100:
@@ -204,7 +205,7 @@ def get_image(nina):
     except:
         return
 
-def set_nina_offline():
+def set_nina_offline() -> None:
     global targetdict
     global last_index
     for target in targetdict:
@@ -230,7 +231,7 @@ if __name__ == '__main__':
     print( "exporting at port {0}".format(EXPORTPORT) )
     if DEBUG: print("debug mode ON")
     start_http_server(EXPORTPORT)
-    time_left = 0
+    time_left: int = 0
     while True:
         try:
             switchstate = nina_up

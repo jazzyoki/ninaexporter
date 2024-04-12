@@ -100,6 +100,10 @@ and start
 ```sh
 python exporter.py
 ```
+or to run in the background 
+```sh
+nohup python exporter.py & 
+```
 
 ### test
 you can test, if that worked by going to a browser and navigate to the exporter metrics page
